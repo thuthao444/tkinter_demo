@@ -1,0 +1,34 @@
+{
+    "face_id": {
+        "gender": "Man",
+        "x": 543,
+        "y": 329,
+        "w": 281,
+        "h": 355,
+        "im_name": "Kh\u00f4ng t\u00ecm th\u1ea5y trong c\u01a1 s\u1edf d\u1eef li\u1ec7u"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                529.8596801757812,
+                437.35638427734375,
+                830.8875122070312,
+                538.4164428710938
+            ],
+            "confidence": 0.9109205603599548,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        30.26763889249293,
+        27.39912292082933,
+        33.70353167086177
+    ],
+    "dress_color": {
+        "detail": "Error processing image: a must be greater than 0 unless no samples are taken"
+    },
+    "tie": [],
+    "time": 5.54407262802124
+}
