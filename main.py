@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import uuid, requests
 import os, json
 from toggle import ToggleButton
+import asyncio, httpx
 
 class App(tk.Tk):
     def __init__(self):
@@ -54,7 +55,7 @@ class App(tk.Tk):
         session_id = uuid.uuid4()
         ims = {}
         def capture_image():
-            frame = self.left_canvas.get_capture()
+            _, frame, _, _, _, _ = self.left_canvas.get_capture()
             if frame is not None:
                 return frame
             return None
@@ -67,11 +68,16 @@ class App(tk.Tk):
         ims["right"] = ("im_4.png", im_bytes, 'image/png')
 
         res = requests.post(self.ip_address, files=ims, data={"session_id": session_id})
-        res_json = res.json()  #  {'face_id': {'gender': 'Man', 'x': 257, 'y': 197, 'w': 147, 'h': 192, 'im_name': 'Không tìm thấy trong cơ sở dữ liệu'}, 'glasses': [{'bounding_box': [245.79197692871094, 257.15582275390625, 411.342529296875, 306.37261962890625], 'confidence': 0.9131490588188171, 'class': 'glasses', 'position': 'Wearing'}], 'nametag': [], 'shirt_color': [122.87591924054018, 97.46677363283861, 96.10810268752508], 'dress_color': [], 'tie': [], 'time': 3.208733558654785}
+        res_json = res.json() 
         self.result_canvas.render_result(res_json)
+
+        # write image and data.json into gallery
         os.makedirs(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}", exist_ok=True)
         with open(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/data.json", "w") as file:
             file.write(json.dumps(res_json, indent=4))
+        cv2.imwrite(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/im.png", frame)
+        cv2.imwrite(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/result.png", frame)
+        self.left_canvas.stop_(session_id, res_json, frame)
         self.open_panel(right_canvas="result")
                                                                                                                                                                                                                                                                                                                                                                                                                                                         
 
@@ -156,6 +162,7 @@ class App(tk.Tk):
 
     
     def close_panel(self):
+        self.left_canvas.start_()
         step = 40
         if self.right_width > 0:
             self.right_width -= step
