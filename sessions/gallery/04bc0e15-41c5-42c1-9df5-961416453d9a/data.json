@@ -1,0 +1,33 @@
+{
+    "face_id": {
+        "gender": "Man",
+        "x": 404,
+        "y": 173,
+        "w": 103,
+        "h": 126,
+        "im_name": "Phan Xuan Bao"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                394.51666259765625,
+                207.8350067138672,
+                514.2161865234375,
+                251.8726043701172
+            ],
+            "confidence": 0.906792163848877,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        60.84569926436126,
+        63.9899333645793,
+        27.11676481975832
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 8.62700891494751
+}

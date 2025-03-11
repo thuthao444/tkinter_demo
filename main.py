@@ -8,13 +8,14 @@ import uuid, requests
 import os, json
 from toggle import ToggleButton
 import asyncio, httpx
+from gif import GifCanvas
+import threading
 
-class App(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Sliding Canvas Example")
+class App(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master, bg="black", width=1280, height=832)
+        self.pack_propagate(False)
         self.width, self.height = 1280, 832
-        self.geometry(f"{self.width}x{self.height}")
         self.canvas = tk.Canvas(self, bg="black")
         self.canvas.pack(fill="both", expand=True)
 
@@ -41,45 +42,48 @@ class App(tk.Tk):
         self.canvas.bind("<Configure>", self.on_configure)
 
         self.ip_address = "http://100.86.165.5:8002/all"
-        self.camera_type = "0"
-        if self.camera_type == "0":
-            self.cap = cv2.VideoCapture(0)
-        else:
-            self.cap = cv2.VideoCapture('rtsp://admin:DVYMYI@10.10.126.122/camera/h264/ch1/main/av_stream')
-
+        # self.ip_address = "http://localhost:8002/all"
         self.create_button()
         self.render_text()
 
 
-    def get_results(self):
+    def get_results(self, is_upload=False):
+
         session_id = uuid.uuid4()
         ims = {}
-        def capture_image():
-            _, frame, _, _, _, _ = self.left_canvas.get_capture()
+        def capture_image(is_upload):
+            _, frame, _, _, _, _ = self.left_canvas.get_capture(is_upload)
             if frame is not None:
-                return frame
+                return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             return None
-        frame = capture_image()
+        frame = capture_image(is_upload)    
         _, im_encoded = cv2.imencode(".png", frame)
         im_bytes = im_encoded.tobytes()
         ims["front"] = ("im_1.png", im_bytes, 'image/png')
         ims["back"] = ("im_2.png", im_bytes, 'image/png')
         ims["left"] = ("im_3.png", im_bytes, 'image/png')
         ims["right"] = ("im_4.png", im_bytes, 'image/png')
-
-        res = requests.post(self.ip_address, files=ims, data={"session_id": session_id})
-        res_json = res.json() 
-        self.result_canvas.render_result(res_json)
-
-        # write image and data.json into gallery
         os.makedirs(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}", exist_ok=True)
+        cv2.imwrite(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/result.png", frame)
+        self.left_canvas.pause(session_id)
+
+        thread = threading.Thread(target=self.send_request, args=(ims, session_id, frame))
+        thread.start()
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+    def send_request(self, ims, session_id, frame):
+        res = requests.post(self.ip_address, files=ims, data={"session_id": session_id})
+        res_json = res.json()
+        self.after(0, self.process_response, res_json,session_id, frame)
+
+    def process_response(self, res_json, session_id, frame):
+        self.result_canvas.render_result(res_json=res_json)
+        
         with open(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/data.json", "w") as file:
             file.write(json.dumps(res_json, indent=4))
         cv2.imwrite(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/im.png", frame)
         cv2.imwrite(f"{os.path.dirname(__file__)}/sessions/gallery/{session_id}/result.png", frame)
         self.left_canvas.stop_(session_id, res_json, frame)
         self.open_panel(right_canvas="result")
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 
     def on_configure(self, event):
         self.canvas.itemconfigure(self.left_window, height=event.height - 75)
@@ -107,7 +111,7 @@ class App(tk.Tk):
         self.canvas.tag_bind(
             self.upload_icon_button,
             "<Button-1>",
-            lambda e: self.open_panel(right_canvas="result")
+            lambda e: self.get_results(is_upload=True)
         )
 
         self.reload_icon = ImageTk.PhotoImage(Image.open("./assets/reload_icon.png").resize((50,50)))
@@ -115,7 +119,7 @@ class App(tk.Tk):
         self.canvas.tag_bind(
             self.reload_icon_button,
             "<Button-1>",
-            lambda e: self.open_panel(right_canvas="result")
+            lambda e: self.reset_session()
         )
 
         self.result_icon = ImageTk.PhotoImage(Image.open("./assets/result_icon.png").resize((50,50)))
@@ -139,11 +143,20 @@ class App(tk.Tk):
                                                             window=self.auto_toggle_canvas,
                                                             width=45, height=30)
         
+        # self.gif_canvas = GifCanvas(self.canvas, width=200, height=500)
+        # self.gif_window = self.canvas.create_window(200, 650, anchor="nw",
+        #                                             window=self.gif_canvas,
+        #                                             width=250, height=500)
+        
         self.result_canvas.asign_button(self.close_panel)
         self.session_canvas.asign_button(self.close_panel)
 
-    def test(self, event="Nooo"):
-        print("ok")
+    def test(self):
+        pass
+    def reset_session(self):
+        self.close_panel()
+        self.result_canvas.reset_result()
+
 
     def open_panel(self, right_canvas):
         if right_canvas == "result":
@@ -160,7 +173,6 @@ class App(tk.Tk):
         # No trailing colon here
         self.animate_panel_open()
 
-    
     def close_panel(self):
         self.left_canvas.start_()
         step = 40
@@ -175,7 +187,7 @@ class App(tk.Tk):
             self.after(5, self.close_panel)
         
     def animate_panel_open(self):
-        target_width = 429
+        target_width = 480  # 429
         step = 90
 
         if self.right_width < target_width:

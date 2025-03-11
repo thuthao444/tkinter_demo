@@ -1,0 +1,33 @@
+{
+    "face_id": {
+        "gender": "Man",
+        "x": 279,
+        "y": 101,
+        "w": 293,
+        "h": 293,
+        "im_name": "Kh\u00f4ng t\u00ecm th\u1ea5y trong c\u01a1 s\u1edf d\u1eef li\u1ec7u"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                258.9760437011719,
+                195.85545349121094,
+                580.5880737304688,
+                278.7132568359375
+            ],
+            "confidence": 0.910973846912384,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        53.33868450136153,
+        46.3426494548189,
+        46.74486435985371
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": -20.026964902877808
+}

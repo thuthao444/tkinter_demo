@@ -1,3 +1,20 @@
 - xu ly result_render
 - ve bounding box
 - hien thi mau
+
+
+- khong de code phia sau
+- chu to
+- doi sang tieng Viet het
+- tkinter loading
+- quay video 
+- xanh do (pending)
+- quy trinh them anh vao db
+
+
+- them anh vao db  
+- test faceid
+- test full
+- fix camera
+- get_color
+

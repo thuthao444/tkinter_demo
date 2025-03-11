@@ -1,0 +1,16 @@
+{
+    "face_id": {
+        "detail": "Processing failed: Face could not be detected in /app/face_id/input/d4bc3311-bf43-42d8-8304-ec3485adb9ef/im_1.png.Please confirm that the picture is a face photo or consider to set enforce_detection param to False. !!!"
+    },
+    "glasses": [],
+    "nametag": [],
+    "shirt_color": [
+        34.997121337592176,
+        39.53849915217477,
+        30.065554635435152
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 10.8013436794281
+}

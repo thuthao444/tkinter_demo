@@ -1,0 +1,28 @@
+{
+    "face_id": {
+        "detail": "Processing failed: Exception encountered when calling layer 'Conv2d_1a_3x3' (type Conv2D).\n\n{{function_node __wrapped__Conv2D_device_/job:localhost/replica:0/task:0/device:GPU:0}} No DNN in stream executor. [Op:Conv2D] name: \n\nCall arguments received by layer 'Conv2d_1a_3x3' (type Conv2D):\n  \u2022 inputs=tf.Tensor(shape=(1, 160, 160, 3), dtype=float32) !!!"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                308.1032409667969,
+                161.70947265625,
+                585.620361328125,
+                236.80374145507812
+            ],
+            "confidence": 0.9167073369026184,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        76.28167037225651,
+        84.01983629159473,
+        57.08611459588369
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 2.3978216648101807
+}

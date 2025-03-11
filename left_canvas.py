@@ -3,8 +3,15 @@ import cv2
 from PIL import Image, ImageTk
 import numpy as np
 from tkinter import messagebox, filedialog
+from gif import GifCanvas
+import threading 
+from threading import Lock
 
 class LeftCanvas(tk.Canvas):
+    last_frame = None
+    last_ready = None
+    lock = Lock()
+
     def __init__(self, parent, **kwargs):
         super().__init__(parent, **kwargs)
         self.is_uploading_images = False
@@ -12,9 +19,12 @@ class LeftCanvas(tk.Canvas):
         if self.camera_type == "0":
             self.cap = cv2.VideoCapture(0)
         else:
-            self.cap = cv2.VideoCapture('rtsp://admin:DVYMYI@192.168.1.4/camera/h264/ch1/main/av_stream')
-
+            self.cap = cv2.VideoCapture('rtsp://admin:DVYMYI@10.10.126.122/camera/h264/ch1/main/av_stream')
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        # thread = threading.Thread(target)
+        
         self.session_id = None
+        self.is_gif = True
         self.update_video()
 
     def get_capture(self, is_upload=False):
@@ -98,30 +108,45 @@ class LeftCanvas(tk.Canvas):
         frame, _, x1, x2, y1, y2 = self.get_capture()
         center_x = self.winfo_width() // 2
         center_y = self.winfo_height() // 2
-        print("center_x, center_y", center_x, center_y)
         if frame is not None:
             img_ = Image.fromarray(frame)
             
             if not self.is_uploading_images:
                 self.imgtk = ImageTk.PhotoImage(img_)
                 self.create_image(center_x, center_y, image=self.imgtk, anchor="center")
+                self.create_text(center_x-185, center_y+320, anchor="nw", 
+                        text="Please stay in the center of the frame and click take photo",
+                        fill="#FFFFFF", font=("Mulish", 12))
+
             else:
                 img = cv2.imread(f"./sessions/gallery/{self.session_id}/result.png")
+                img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
                 frame[y1:y2, x1:x2] = img
                 self.imgtk = ImageTk.PhotoImage(Image.fromarray(frame))
                 self.create_image(center_x, center_y, image=self.imgtk, anchor="center")
-            
-        self.create_text(center_x-185, center_y+320, anchor="nw", 
-                        text="Please stay in the center of the frame and click take photo",
-                        fill="#FFFFFF", font=("Mulish", 12))
-        
+
+                if self.is_gif:
+                    self.create_window(center_x-30, center_y+300, anchor="nw", window=self.gif_canvas,
+                            width=60, height=60)
+                    self.gif_canvas.animate()
+                else:
+                    if hasattr(self, 'gif_canvas') and self.gif_canvas is not None:
+                        self.gif_canvas.destroy()
+                        self.gif_canvas = None
+
         self.loop = self.after(20, self.update_video)
 
-    def stop_(self, session_id, res_json, frame):
+    def pause(self, session_id):         # dung hinh luc request
+        self.gif_canvas = GifCanvas(self, width=60, height=60)
+        self.session_id = session_id
+        self.is_uploading_images = True
+        self.is_gif = True
+    def stop_(self, session_id, res_json, frame):          # dung hinh luc render
+        self.is_gif = False
         self.session_id = session_id
         print("res_json:", res_json)
         def draw_bounding_box(label, x1, y1, x2, y2):
-            if label == "Không tìm thấy trong cơ sở dữ liệu":
+            if label == "Không tìm thấy trong CSDL":
                 label = "Khong tim thay trong CSDL"
             im = cv2.imread(f"./sessions/gallery/{session_id}/result.png")
             im_result = cv2.rectangle(im, (x1, y1), (x2, y2), (0, 255, 0), 2)
@@ -132,7 +157,14 @@ class LeftCanvas(tk.Canvas):
         
         ######## Faceid #######
         if "face_id" in res_json:
-            draw_bounding_box(res_json["face_id"]["im_name"], res_json["face_id"]["x"], res_json["face_id"]["y"],
+            if "im_name" in res_json["face_id"]:
+                if res_json["face_id"]["im_name"] == "Không tìm thấy trong cơ sở dữ liệu":
+                    im_name = "Không tìm thấy trong CSDL"
+                else:
+                    im_name = res_json["face_id"]["im_name"]
+            else:
+                im_name = "N/A"
+            draw_bounding_box(im_name, res_json["face_id"]["x"], res_json["face_id"]["y"],
                             res_json["face_id"]["x"] + res_json["face_id"]["w"], 
                             res_json["face_id"]["y"] + res_json["face_id"]["h"])
 
@@ -151,6 +183,10 @@ class LeftCanvas(tk.Canvas):
         self.is_uploading_images = True
     def start_(self):
         self.is_uploading_images = False
+        
+
+    def wait_(self):
+        self.is_uploading_images = True
 
 # Demo sử dụng
 if __name__ == "__main__":

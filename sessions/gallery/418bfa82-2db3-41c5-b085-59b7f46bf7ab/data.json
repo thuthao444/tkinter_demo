@@ -1,0 +1,28 @@
+{
+    "face_id": {
+        "gender": "Woman",
+        "x": 228,
+        "y": 93,
+        "w": 242,
+        "h": 278,
+        "im_name": "Kh\u00f4ng t\u00ecm th\u1ea5y trong c\u01a1 s\u1edf d\u1eef li\u1ec7u"
+    },
+    "glasses": [],
+    "nametag": [
+        {
+            "x1": 201,
+            "y1": 503,
+            "x2": 358,
+            "y2": 560
+        }
+    ],
+    "shirt_color": [
+        211.3331116766199,
+        213.37607897799205,
+        92.28059182342486
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 7.633800506591797
+}

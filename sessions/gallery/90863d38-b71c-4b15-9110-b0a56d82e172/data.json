@@ -1,0 +1,33 @@
+{
+    "face_id": {
+        "gender": "Man",
+        "x": 363,
+        "y": 9,
+        "w": 209,
+        "h": 205,
+        "im_name": "Nguyen Thi Thanh Thuy"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                350.2929382324219,
+                25.160982131958008,
+                590.7421264648438,
+                110.6277847290039
+            ],
+            "confidence": 0.9248870611190796,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        46.914103866449715,
+        46.84647470761154,
+        24.177977148302304
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 3.0326271057128906
+}

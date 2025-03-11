@@ -1,0 +1,33 @@
+{
+    "face_id": {
+        "gender": "Man",
+        "x": 447,
+        "y": 3,
+        "w": 248,
+        "h": 193,
+        "im_name": "Nguyen Van Phong"
+    },
+    "glasses": [
+        {
+            "bounding_box": [
+                501.17572021484375,
+                3.737379550933838,
+                710.584228515625,
+                75.06778717041016
+            ],
+            "confidence": 0.7163069844245911,
+            "class": "glasses",
+            "position": "Wearing"
+        }
+    ],
+    "nametag": [],
+    "shirt_color": [
+        39.4170881994698,
+        39.804255928924555,
+        21.50662033388264
+    ],
+    "dress_color": [],
+    "trouser_color": [],
+    "tie": [],
+    "time": 3.531278133392334
+}
