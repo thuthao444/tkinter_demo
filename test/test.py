@@ -61,7 +61,7 @@ async def fetch(client: httpx.AsyncClient, url: str, data: dict = None, files: d
     return msgpack.unpackb(response.content) if is_msg else response.json()
 
 async def test_cloth():
-    im_dir = "./tie"
+    im_dir = "./glasses/Glasses"
     im_paths = [os.path.join(im_dir, im_name) for im_name in os.listdir(im_dir)]
     
     session_id = str(uuid.uuid4())
